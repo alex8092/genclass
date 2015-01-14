@@ -18,6 +18,14 @@ private:
 	std::map<std::string, func_callback>							_allow_cmds;
 	std::map<std::string, std::string>								_helper_cmds;
 
+	static void	onPublic(Object *obj, const std::string& data);
+	static void	onProtected(Object *obj, const std::string& data);
+	static void	onPrivate(Object *obj, const std::string& data);
+
+protected:
+	bool															_public = true;
+	bool															_protected = false;
+
 public:
 
 	explicit Object(const std::string& name, Object *parent);
@@ -70,6 +78,18 @@ public:
 		for (int i = 0; i < level; ++i)
 			o << "\t";
 		return (o);
+	}
+
+	inline bool	isPublic() const {
+		return (this->_public && !this->_protected);
+	}
+
+	inline bool isProtected() const {
+		return (!this->_public && this->_protected);
+	}
+
+	inline bool isPrivate() const {
+		return (!this->_public && !this->_protected);
 	}
 };
 

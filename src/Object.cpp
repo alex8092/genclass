@@ -8,6 +8,9 @@ Object::Object(const std::string& name, Object* parent) :
 {
 	if (parent)
 		parent->addObject(*this);
+	this->registerCmd("public", Object::onPublic, "public -> set object public");
+	this->registerCmd("protected", Object::onProtected, "protected -> set object protected");
+	this->registerCmd("private", Object::onPrivate, "private -> set object private");
 }
 
 Object::Object(const Object& obj) :
@@ -32,6 +35,21 @@ Object&	Object::addObject(Object& obj)
 {
 	this->_subobjects.push_back(&obj);
 	return (*this);
+}
+
+void	Object::onPublic(Object *obj, const std::string& data) {
+	obj->_public = true;
+	obj->_protected = false;
+}
+
+void	Object::onProtected(Object *obj, const std::string& data) {
+	obj->_public = false;
+	obj->_protected = true;
+}
+
+void	Object::onPrivate(Object *obj, const std::string& data) {
+	obj->_public = false;
+	obj->_protected = false;
 }
 
 bool	Object::waitCmd()
