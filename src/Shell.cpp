@@ -6,7 +6,7 @@
 Shell::Shell() :
 	Object("", 0)
 {
-	this->registerCmd("class", Shell::onClass);
+	this->registerCmd("class", Shell::onClass, "class <classname> -> create class in object");
 }
 
 Shell::~Shell()
@@ -28,8 +28,15 @@ void				Shell::onClass(Object *obj, const std::string& data)
 		std::cerr << "An class cannot have an empty name" << std::endl;
 		return ;
 	}
+	bool	in = false;
+	for (auto it : obj->objects()) {
+		if (it->getName().compare(data) == 0) {
+			it->waitCmd();
+			in = true;
+		}
+	}
 	ClassGenerator *gene = new ClassGenerator(data, obj);
-	gene->registerCmd("class", Shell::onClass);
+	gene->registerCmd("class", Shell::onClass, "class <classname> -> create class in object");
 	while (gene->waitCmd())
 		;
 }

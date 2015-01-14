@@ -45,21 +45,30 @@ bool	Object::waitCmd()
 		if (std::getline(ss, cmd, ' ')) {
 			if (cmd.compare("end") == 0)
 				return (false);
-			auto it = this->_allow_cmds.find(cmd);
-			if (it != this->_allow_cmds.end()) {
-				if (this->_allow_cmds[cmd]) {
-					std::string data = ss.str().substr(cmd.length());
-					while (std::isspace(*data.begin()))
-						data = data.substr(1);
-					this->_allow_cmds[cmd](this, data);
-					return (true);
+			else if (cmd.compare("help") == 0)
+			{
+				for (auto it : this->_allow_cmds)
+					std::cout << "cmd [" << it.first << "] << " << this->_helper_cmds[it.first] << std::endl;
+				return (true);
+			}
+			else
+			{
+				auto it = this->_allow_cmds.find(cmd);
+				if (it != this->_allow_cmds.end()) {
+					if (this->_allow_cmds[cmd]) {
+						std::string data = ss.str().substr(cmd.length());
+						while (std::isspace(*data.begin()))
+							data = data.substr(1);
+						this->_allow_cmds[cmd](this, data);
+						return (true);
+					} else {
+						std::cerr << "Invalid function for cmd [" << cmd << "]" << std::endl;
+						return (true);
+					}
 				} else {
-					std::cerr << "Invalid function for cmd [" << cmd << "]" << std::endl;
+					std::cerr << "Unknow command [" << cmd << "]" << std::endl;
 					return (true);
 				}
-			} else {
-				std::cerr << "Unknow command [" << cmd << "]" << std::endl;
-				return (true);
 			}
 		} else {
 			std::cerr << "Unknow error" << std::endl;

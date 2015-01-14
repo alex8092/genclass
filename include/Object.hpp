@@ -4,6 +4,7 @@
 # include <string>
 # include <vector>
 # include <map>
+# include <iostream>
 
 class Object
 {
@@ -15,6 +16,7 @@ private:
 	std::vector<Object*>											_subobjects;
 	std::string														_name;
 	std::map<std::string, func_callback>							_allow_cmds;
+	std::map<std::string, std::string>								_helper_cmds;
 
 public:
 
@@ -25,6 +27,7 @@ public:
 
 	virtual const std::string	display() const = 0;
 	virtual const std::string	strnamespace() const = 0;
+
 	Object&	addObject(Object& obj);
 
 	inline size_t				nbObjects() const {
@@ -39,8 +42,13 @@ public:
 		return (this->_subobjects);
 	}
 
-	inline Object&				registerCmd(const std::string& name, func_callback f) {
+	inline const std::vector<Object*>&	objects() const {
+		return (this->_subobjects);
+	}
+
+	inline Object&				registerCmd(const std::string& name, func_callback f, const std::string& helper) {
 		this->_allow_cmds[name] = f;
+		this->_helper_cmds[name] = helper;
 		return (*this);
 	}
 
@@ -52,11 +60,17 @@ public:
 		return (this->_parent);
 	}
 
-	inline const Object*				parent() const {
+	inline const Object*		parent() const {
 		return (this->_parent);
 	}
 
 	bool						waitCmd();
+
+	inline std::ostream&		print_level(std::ostream& o, int level) const {
+		for (int i = 0; i < level; ++i)
+			o << "\t";
+		return (o);
+	}
 };
 
 #endif
